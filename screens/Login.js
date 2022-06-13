@@ -4,6 +4,7 @@ import TextBox from "../components/TextBox"
 import Btn from "../components/Btn"
 import firebase from 'firebase/app';
 import "firebase/auth";
+import "firebase/database";
 
 const styles = StyleSheet.create({
     view: {
@@ -16,6 +17,18 @@ const styles = StyleSheet.create({
 
 export default function Loginscreen({ navigation }) {
 
+    
+    
+    
+    firebase.database().ref('Appdata').on('value', (snapshot) => {
+        const student = snapshot.val();
+        console.log('Student Data is  = ',student);
+      });
+
+
+
+
+      
     const [values, setValues] = useState({
         email: "",
         pwd: ""
@@ -36,11 +49,25 @@ export default function Loginscreen({ navigation }) {
 
         firebase.auth().signInWithEmailAndPassword(email, pwd)
             .then(() => {
+
             })
             .catch((error) => {
                 alert(error.message)
                 // ..
             });
+    }
+
+    function guestUser() {
+
+        firebase.auth().signInAnonymously()
+            .then(()=> {
+            })
+            .catch(error => {
+                this.setState({ errorMessage: error.message }, () => {
+                    ToastAndroid.show(this.state.errorMessage, ToastAndroid.SHORT);
+                })
+            });
+        
     }
 
     return <View style={styles.view}>
@@ -50,6 +77,7 @@ export default function Loginscreen({ navigation }) {
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "92%", }}>
             <Btn onClick={() => Login()} title="Login" style={{ width: "48%" }} />
             <Btn onClick={() => navigation.navigate("Sign Up")} title="Sign Up" style={{ width: "48%", backgroundColor: "#344869" }} />
+            <Btn onClick={() => guestUser()} title="Login" style={{ width: "48%" }} />
         </View>
     </View>
 }
